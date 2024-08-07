@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="DiffuserLite: Towards Real-time Diffusion Planning">
+  <!-- <meta name="keywords" content="Nerfies, D-NeRF, NeRF"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DiffuserLite: Towards Real-time Diffusion Planning</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script> -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/logo.png">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">DiffuserLite: Towards Real-time Diffusion Planning</h1>
+          <div class="is-size-5 publication-authors">
+            <!-- <span class="author-block">
+              <a href="https://keunhong.com">Keunhong Park</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://utkarshsinha.com">Utkarsh Sinha</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://jonbarron.info">Jonathan T. Barron</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="http://sofienbouaziz.com">Sofien Bouaziz</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.danbgoldman.com">Dan B Goldman</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://homes.cs.washington.edu/~seitz/">Steven M. Seitz</a><sup>1,2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="http://www.ricardomartinbrualla.com">Ricardo Martin-Brualla</a><sup>2</sup>
+            </span>
+          </div> -->
+<!-- 
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>University of Washington,</span>
+            <span class="author-block"><sup>2</sup>Google Research</span>
+          </div> -->
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/diffuserlite/diffuserlite.github.io"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a> -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="abstract-section">
+  <style>
+    .abstract-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .abstract-title {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .abstract-content {
+      text-align: justify;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .abstract-image {
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      margin: 0 auto;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-style: italic;
+      color: #666;
+    }
+  </style>
+
+  <h2 class="abstract-title">Abstract</h2>
+  
+  <p class="abstract-content">
+    Diffusion planning has been recognized as an effective decision-making paradigm in various domains. 
+    The capability of generating high-quality long-horizon trajectories makes it a promising research direction. 
+    However, existing diffusion planning methods suffer from low decision-making frequencies due to the expensive iterative sampling cost. 
+    To alleviate this, we introduce <b>DiffuserLite</b>, a super fast and lightweight diffusion planning framework, 
+    which employs a planning refinement process (PRP) to generate coarse-to-fine-grained trajectories, significantly reducing 
+    the modeling of redundant information and leading to notable increases in decision-making frequency. 
+    Our experimental results demonstrate that DiffuserLite achieves a decision-making frequency of 
+    122.2Hz (112.7x faster than predominant frameworks) and reaches state-of-the-art performance on D4RL, Robomimic, and FinRL benchmarks. 
+    In addition, DiffuserLite can also serve as a flexible plugin to increase the decision-making frequency of other diffusion planning algorithms, 
+    providing a structural design reference for future works.
+  </p>
+  <img src="./static/images/fig1.png" alt="DiffuserLite: Towards Real-time Diffusion Planning" >
+</section>
+<hr>
+<section class="abstract-section">
+  <style>
+    .abstract-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .abstract-title {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .abstract-content {
+      text-align: justify;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .abstract-image {
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      margin: 0 auto;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-style: italic;
+      color: #666;
+    }
+  </style>
+
+  <h2 class="abstract-title">Real-time Franka Kitchen</h2>
+  
+  <p class="abstract-content">
+    The core motivation behind DiffuserLite is to increase the decision frequency of diffusion planning algorithms. 
+    While predominant works demonstrate impressive decision-making performance, 
+    their extremely low decision frequency poses challenges for real-world applications. 
+    The fastest version of DiffuserLite achieves a decision frequency increase of <b>nearly 112.7 times</b>. 
+    Below, we demonstrate this using a real-time Franka kitchen task, 
+    where we consider only the planning time of the algorithm as the update interval for the robot arm's state. 
+    It can be observed that the three versions of DiffuserLite (left three videos) exhibit significantly faster decision frequencies, 
+    meeting real-world requirements, while Diffuser and DD, on the other hand, fall short (right two videos).
+  </p>
+</section>
+
+<section class="video-gallery">
+  <style>
+    .abstract-content {
+      text-align: justify;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .video-gallery {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .video-item {
+      width: 18%;
+      margin-bottom: 20px;
+    }
+    .video-item video {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+    }
+    .video-caption {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+  
+  <div class="video-item">
+    <video controls>
+      <source src="./static/images/video_diff.mp4" type="video/mp4">
+    </video>
+    <div class="video-caption">DiffuserLite-D</div>
+  </div>
+
+  <div class="video-item">
+    <video controls>
+      <source src="./static/images/video_rf1.mp4" type="video/mp4">
+    </video>
+    <div class="video-caption">DiffuserLite-R1</div>
+  </div>
+
+  <div class="video-item">
+    <video controls>
+      <source src="./static/images/video_rf2.mp4" type="video/mp4">
+    </video>
+    <div class="video-caption">DiffuserLite-R2</div>
+  </div>
+
+  <div class="video-item">
+    <video controls>
+      <source src="./static/images/video_diffuser.mp4" type="video/mp4">
+    </video>
+    <div class="video-caption">Diffuser</div>
+  </div>
+
+  <div class="video-item">
+    <video controls>
+      <source src="./static/images/video_dd.mp4" type="video/mp4">
+    </video>
+    <div class="video-caption">Decision Diffuser</div>
+  </div>
+
+  <img src="./static/images/kitchen_runtime.png" alt="DiffuserLite: Towards Real-time Diffusion Planning" style="width: 40%; max-width: 800px; margin: 0 auto;">
+  
+
+</section>
+
+
+<section class="abstract-section">
+  <style>
+    .abstract-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .abstract-title {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .abstract-content {
+      text-align: justify;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .abstract-image {
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      margin: 0 auto;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-style: italic;
+      color: #666;
+    }
+  </style>
+
+  <p class="abstract-content">
+    Figure above shows the detailed runtime and performance comparison in Franka Kitchen. The y-axis represents the number of
+    completed tasks (maximum of 4), and the x-axis represents the required wall-clock time. Task success rates
+    are presented in colored circles. All results are averaged over 250 rollouts. DiffuserLite demonstrates significant
+    advantages in both wallclock time and success rate.
+  </p>
+  <hr>
+  <h2 class="abstract-title">Method</h2>
+
+  <img src="./static/images/main.png" alt="DiffuserLite: Towards Real-time Diffusion Planning" >
+  
+  <p class="abstract-content">
+    Our insight is that the low decision frequency is primarily attributed to modeling a denoising process for a long-horizon trajectory distribution, 
+    which requires a heavy neural network backbone and multiple forward passes. 
+    In practice, we find that disparities between plans increase as the horizon grows, leading to poor consistency between plans in consecutive steps. 
+    Besides, agents often struggle to reach the planned distant state. These facts argue that while long-horizon planning helps improve foresight, 
+    it introduces redundant information in distinct parts. The details in closer parts are more crucial. 
+    Ignoring the modeling of these redundant parts in the diffusion planning process will significantly reduce the complexity of the trajectory distribution to be fitted, 
+    making it possible to build a fast and lightweight diffusion planning framework. Motivated by these insights, 
+    we propose to build a plan refinement process (PRP) to speed up diffusion planning. First, we perform "rough" planning, 
+    where jumpy planning is executed, only considering the states at intervals that are far apart and ignoring other individual states. 
+    Then, we refine a small portion of the plan, focusing on the steps closer to the current state. 
+    By doing so, we fill in the execution details between two states far apart, gradually refining the plan to the step level. 
+    This approach has three advantages: 1) It reduces the length of the sequences generated by the diffusion model, 
+    simplifying the complexity of the probability distribution to be fitted. 
+    2) It significantly reduces the search space of plans, making it easier for the planner to find well-performed trajectories. 
+    3) Since only the first action of each step is executed, rough planning of steps further away causes no noticeable performance drop.
+  </p>
+
+</section>
+
+<section class="abstract-section">
+  <style>
+    .abstract-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .abstract-title {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .abstract-content {
+      text-align: justify;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .abstract-image {
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      margin: 0 auto;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-style: italic;
+      color: #666;
+    }
+  </style>
+
+<hr>
+
+  <h2 class="abstract-title">Experiments</h2>
+
+  <img src="./static/images/table1.png" alt="DiffuserLite: Towards Real-time Diffusion Planning" >
+  
+  <p class="abstract-content">
+    <b>Runtime Cost (RQ1)</b> The primary objective of DiffuserLite is to increase the decision-making frequency. 
+    Therefore, we first test its wall-clock runtime cost (time consumption for one action inference) under three different backbones, 
+    compared to Diffuser, DD, and HDMI, to determine the extent of the advantage gained. 
+    We present the test results in the table above, which shows that the runtime cost of DiffuserLite with D, R1, and R2 backbones 
+    is only <b>1.23%, 0.89%, and 0.51%</b> of the average runtime cost of Diffuser and DD, respectively. 
+    <b>The remarkable improvement in decision-making frequency does not harm its performance.</b> 
+    These improvements are attributed to ignoring redundant information in PRP, 
+    which reduces the complexity of the distribution that the backbone generative model needs to fit, 
+    allowing us to employ a light neural network backbone and use fewer sampling steps to conduct perfect-enough planning. 
+    Its success in FrankaKitchen, a realistic robot manipulation scenario, also reflects its potential application in real-world settings.
+  </p>
+  <hr>
+
+  <img src="./static/images/table2.png" alt="DiffuserLite: Towards Real-time Diffusion Planning" >
+  
+  <p class="abstract-content">
+    <b>Performance (RQ2)</b> DiffuserLite is then evaluated on various popular domains in D4RL, 
+    Robomimic, and FinRL, to test how well it can maintain the performance when significantly increasing the decision-making frequency. 
+    All results are presented in tables above. Results in D4RL table show significant performance improvements across all benchmarks with high decision-making frequency. 
+    This advantage is particularly pronounced in FrankaKitchen and Antmaze environments, 
+    indicating that the structure of DiffuserLite enables more accurate and efficient planning in long-horizon tasks, 
+    thus yielding greater benefits. In the MuJoCo environments, more notable advantages are shown on sub-optimal datasets, 
+    i.e., "medium" and "medium-replay" datasets. This sub-optimal advantage can be attributed to the PRP planning structure, 
+    which does not require one-shot generation of a consistent long trajectory, but explicitly demands stitching. 
+    This allows for better utilization of high-quality segments in low-quality datasets, leading to improved performance. 
+    Results in Robomimic and FinRL table are obtained by models trained on real-world datasets, 
+    and demonstrate that DiffuserLite continues to exhibit its superiority in these real-world tasks, achieving performance comparable to SOTA algorithms. 
+    This illustrates the potential application of DiffuserLite in real-world scenarios.
+  </p>
+  <hr>
+
+  <img src="./static/images/table3.png" alt="DiffuserLite: Towards Real-time Diffusion Planning" >
+  
+  <p class="abstract-content">
+    <b>Flexible Plugin (RQ3)</b> To test the capability of DiffuserLite as a flexible plugin to support other diffusion planning algorithms, 
+    Aligndiff is selected as a non-reward-maximizing algorithm backbone, and integrated with DiffuserLite plugin, 
+    referred to as AlignDiff-Lite. AlignDiff aims to customize the agent's behavior to align with human preferences and 
+    introduces an MAE area metric to measure this alignment capability, where a larger value indicates a stronger alignment capability. 
+    The comparison of AlignDiff and AlignDiff-Lite is presented in table above, showing that AlignDiff-Lite achieves a 560% improvement in decision-making 
+    frequency compared to AlignDiff, while only experiencing a small performance drop of 3.2%. 
+    This result demonstrates the potential of DiffuserLite serving as a plugin to accelerate diffusion planning across various domains.
+  </p>
+  <hr>
+
+  <img src="./static/images/table4.png" alt="DiffuserLite: Towards Real-time Diffusion Planning" >
+  <img src="./static/images/table5.png" alt="DiffuserLite: Towards Real-time Diffusion Planning" >
+  
+  <p class="abstract-content">
+    <b>Ablations (RQ4)</b><br>
+    <b>How to choose the number of planning levels L and the temporal horizons H_l?</b>
+     We compared the performance of DiffuserLite with 2/3/4 planning levels and with four different temporal horizon designs, 
+     and reported the results in Table 6. The list in the first row represents the temporal horizon for each level, 
+     with larger values on the left indicating more planning at a coarser granularity, 
+     while larger values on the right indicate more planning at a finer granularity. 
+     For planning level design, results show a performance drop with 2 planning levels, 
+     particularly in Antmaze, and a consistently excellent performance with 3 or 4 planning levels. 
+     This suggests that for longer-horizon tasks, it is advisable to design more planning levels. 
+     For temporal horizon design, results show a performance drop when the temporal horizon of one level becomes excessively long. 
+     This suggests the temporal horizon of each level is supposed to be similar and stay close. 
+     We summarized and presented a design choice list in Appendix C in the paper. <br>
+    
+    <b>Has the last level (short horizon) of DiffuserLite already performed well in decision making?</b>
+    This is equivalent to the direct use of the shorter planning horizon. 
+    If it is true, key points generated by former levels may not have an impact, making PRP meaningless. 
+    To address this question, we conduct tests using a one-level DiffuserLite with the same temporal horizon as the last level of the default model, 
+    referred to as "Lite w/ only last level". The results are presented in Table 7, column 2. 
+    The notable performance drop demonstrates the importance of a long-enough planning horizon.
+
+    <b>Can decision-making be effectively accomplished without progressive refinement planning (PRP)?</b>
+    To address this question, we conduct tests using a one-level DiffuserLite with the same temporal horizon as the default model, 
+    referred to as Lite w/o PRP. This model only supports one-shot generation at the inference phase. 
+    We also test a "smaller" DD with the same network parameters and sampling steps as DiffuserLite, 
+    to verify whether one can speed up DD by simply reducing the parameters, referred to as DD-small. 
+    The results are presented in Table 7, column 3-4. The large standard deviation and the significant
+     performance drop provide strong evidence for the limitations of one-shot generation planning, 
+     having difficulties in modeling the distribution of detailed long-horizon trajectories. 
+     However, DiffuserLite can maintain high performance with fast decision-making frequency due to its lite architecture and simplified fitted distribution.<br>
+    
+     <b>More ablations.</b> We conducted further ablation studies on model size, sampling steps, planning horizon, with or without value condition, 
+     and visual comparison to better elucidate DiffuserLite. Please refer to the Appendix in our paper for these sections.
+  </p>
+  <hr>
+</section>
+
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="./static/videos/teaser.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
+        free-viewpoint
+        portraits.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-steve">
+          <video poster="" id="steve" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/steve.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-chair-tp">
+          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/chair-tp.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-shiba">
+          <video poster="" id="shiba" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/shiba.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-fullbody">
+          <video poster="" id="fullbody" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/fullbody.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-blueshirt">
+          <video poster="" id="blueshirt" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/blueshirt.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-mask">
+          <video poster="" id="mask" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/mask.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-coffee">
+          <video poster="" id="coffee" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/coffee.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-toby">
+          <video poster="" id="toby" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/toby2.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="https://github.com/diffuserlite/diffuserlite.github.io" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            This means you are free to borrow the <a
+              href="https://github.com/diffuserlite/diffuserlite.github.io">source code</a> of this website,
+            we just ask that you link back to this page in the footer.
+            Please remember to remove the analytics code included in the header of the website which
+            you do not want on your website.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
